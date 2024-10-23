@@ -1,0 +1,11 @@
+services:
+  gulpfile:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gulp-compiler
+    command: npm run dev
+    volumes:
+      - ./src:/usr/app/src
+      - ./static:/usr/app/static
+      - ./gulpfile.js:/usr/app/gulpfile.js

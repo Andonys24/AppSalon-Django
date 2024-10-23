@@ -1,0 +1,28 @@
+@use "base/variables" as v;
+@use "base/mixins" as m;
+
+.boton {
+	@include m.boton(v.$azul, v.$blanco);
+	& {
+		border-radius: 1rem;
+	}
+}
+.boton-eliminar {
+	@include m.boton(v.$rojo, v.$blanco);
+	& {
+		border-radius: 1rem;
+	}
+}
+
+.barra-servicios {
+	margin-bottom: v.$separacion;
+
+	@include m.tablet {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.boton {
+		margin: 0 0 1rem 0;
+	}
+}
