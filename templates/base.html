@@ -3,15 +3,23 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>App Salón | {% block title %}{% endblock title %}</title>
+		<title>App Salón | {{title}}</title>
 		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;700;900&display=swap" rel="stylesheet" />
-		<link rel="stylesheet" href="/build/css/app.css" />
+		{% load static %} <link rel="stylesheet" href="{% static "css/app.css" %}" />
 	</head>
 
 	<body>
 		<div class="contenedor-app">
 			<div class="imagen"></div>
-			<div class="app">{% block content %}{% endblock content %}</div>
+			<div class="app">
+				{% if name_page %}
+					<h1 class="nombre-pagina">{{name_page}}</h1>
+				{% endif %}
+				{% if description_page %}
+					<p class="descripcion-pagina">{{description_page}}</p>
+				{% endif %}
+				{% block content %}{% endblock content %}
+			</div>
 		</div>
 		{% block scripts %}{% endblock scripts %}
 	</body>
