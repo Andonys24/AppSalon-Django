@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # Mis apps
     "authentication",
     "utils",
+    "dating_services",
 ]
 
 AUTH_USER_MODEL = "authentication.CustomUser"

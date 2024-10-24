@@ -2,7 +2,6 @@ import secrets
 import django.utils.timezone as timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from datetime import timedelta
@@ -33,6 +32,9 @@ class Token(models.Model):
 
     def is_expired(self):
         return timezone.now() > self.expiration_date
+    
+    def __str__(self):
+        return self.token
 
 
 @receiver(post_save, sender=CustomUser)
