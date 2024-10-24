@@ -42,7 +42,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Mis apps
     "authentication",
+    "utils",
 ]
+
+AUTH_USER_MODEL = "authentication.CustomUser"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -89,6 +92,14 @@ DATABASES = {
     }
 }
 
+# email credentials
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST_USER = os.getenv("EMAIL_USER")
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS")
+DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST")
+EMAIL_USE_TLS = True
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

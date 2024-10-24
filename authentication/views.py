@@ -1,5 +1,9 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from .models import CustomUser, Token
+from .forms import CustomUserForm
+from utils.task import send_confirmation_email, send_recovery_email
 
 
 # Create your views here.
@@ -45,6 +49,30 @@ def recover(request):
 
 
 def register(request):
+    alerts = []
+    if request.method == "POST":
+        form = CustomUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            if user:
+                token = Token.objects.get(user=user)
+                if token:
+                    send_confirmation_email(user, token.token)
+                    messages.success(
+                        request, "Cuenta creada correctamente", extra_tags="exito"
+                    )
+                    form = CustomUserForm()
+                    return redirect("login")
+                else:
+                    alerts.append("Error al crear la cuenta")
+            else:
+                alerts.append("Error al crear la cuenta")
+        else:
+            alerts = []
+            for field, errors in form.errors.items():
+                alerts.extend(errors)
+    else:
+        form = CustomUserForm()
     return render(
         request,
         "register.html",
@@ -52,5 +80,7 @@ def register(request):
             "title": "Registrar",
             "name_page": "Crea tu cuenta",
             "description_page": "Llena el siguiente formulario para crear una cuenta",
+            "form": form,
+            "alerts": alerts,
         },
     )

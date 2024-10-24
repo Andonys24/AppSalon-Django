@@ -1,0 +1,5 @@
+{% if alerts %}
+    {% for alert in alerts %}
+        <div class="alerta error">{{ alert }}</div>
+    {% endfor %}
+{% endif %}
