@@ -102,6 +102,9 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS")
 DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST")
 EMAIL_USE_TLS = True
 
+# APP URL
+APP_URL = os.getenv("APP_URL")
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 

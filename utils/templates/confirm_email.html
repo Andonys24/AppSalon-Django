@@ -62,7 +62,9 @@
         <div class="content">
             <p>Hola <strong>{{ username }}</strong>,</p>
             <p>Has creado tu cuenta en App Salón. Solo debes confirmarla presionando el siguiente enlace:</p>
-            <p><a href="http://localhost:8000/confirm/{{ token }}" class="button">Confirmar Cuenta</a></p>
+            <p>
+                <a href="{{app_url}}{% url "confirmation" token %}" class="button">Confirmar Cuenta</a>
+            </p>
             <p>Si tú no solicitaste esta cuenta, puedes ignorar este mensaje. Nadie más podrá confirmar tu cuenta sin tu autorización.</p>
         </div>
         <div class="footer">

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import CustomUser, Token
@@ -8,6 +8,28 @@ from utils.task import send_confirmation_email, send_recovery_email
 
 # Create your views here.
 def custom_login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        try:
+            user = CustomUser.objects.get(username=username)
+        except CustomUser.DoesNotExist:
+            messages.error(request, "Usuario no encontrado")
+        else:
+            if not user.is_active:
+                messages.error(request, "Cuenta no confirmada")
+            else:
+                user = authenticate(request, username=username, password=password)
+                if user is not None:
+                    # login(request, user)
+                    messages.success(
+                        request, "Inicio de sesión correcto", extra_tags="exito"
+                    )
+                    # return redirect("home")
+                else:
+                    messages.error(request, "Credenciales incorrectas")
+
     return render(
         request,
         "login.html",
@@ -82,5 +104,39 @@ def register(request):
             "description_page": "Llena el siguiente formulario para crear una cuenta",
             "form": form,
             "alerts": alerts,
+        },
+    )
+
+
+def confirmation(request, token):
+    if not token:
+        return redirect("login")
+
+    try:
+        token = Token.objects.get(token=token)
+    except Token.DoesNotExist:
+        messages.error(request, "Token no válido")
+    else:
+        if token.used:
+            messages.error(request, "Este token ya ha sido utilizado")
+        elif token.is_expired():
+            messages.error(request, "Token expirado")
+        else:
+            user = get_object_or_404(CustomUser, id=token.user.id)
+            user.is_active = True
+            token.used = True
+            user.save()
+            token.save()
+            messages.success(
+                request, "Cuenta confirmada correctamente", extra_tags="exito"
+            )
+            return redirect("login")
+
+    return render(
+        request,
+        "confirmation.html",
+        {
+            "title": "Confirmación",
+            "name_page": "Confirmación de cuenta",
         },
     )

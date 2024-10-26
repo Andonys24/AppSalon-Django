@@ -15,7 +15,7 @@ def send_custom_email(subject, message, recipient_list, html_message=None):
 def send_confirmation_email(user, token):
     subject = "Confirma tu cuenta"
     message = render_to_string(
-        "confirm_email.html", {"token": token, "username": user.username}
+        "confirm_email.html", {"token": token, "username": user.username, 'app_url': settings.APP_URL}
     )
     recipient_list = [user.email]
     send_custom_email(subject, message, recipient_list, html_message=message)
@@ -23,7 +23,7 @@ def send_confirmation_email(user, token):
 def send_recovery_email(user, token):
     subject = "Recupera tu contraseña"
     message = render_to_string(
-        "recover_email.html", {"token": token, "username": user.username}
+        "recover_email.html", {"token": token, "username": user.username, 'app_url': settings.APP_URL}
     )
     recipient_list = [user.email]
     send_custom_email(subject, message, recipient_list, html_message=message)

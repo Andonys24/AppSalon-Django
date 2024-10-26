@@ -10,6 +10,7 @@ from datetime import timedelta
 # Create your models here.
 class CustomUser(AbstractUser):
     phone = models.CharField(max_length=15, blank=True, null=True)
+    is_active = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Usuario"
@@ -32,7 +33,7 @@ class Token(models.Model):
 
     def is_expired(self):
         return timezone.now() > self.expiration_date
-    
+
     def __str__(self):
         return self.token
 

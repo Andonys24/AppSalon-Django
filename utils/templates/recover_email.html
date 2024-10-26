@@ -62,7 +62,7 @@
         <div class="content">
             <p>Hola <strong>{{ username }}</strong>,</p>
             <p>Para recuperar tu contraseña, haz clic en el siguiente enlace:</p>
-            <p><a href="http://localhost:8000/recover/{{ token }}" class="button">Recuperar Contraseña</a></p>
+            <p><a href="{{app_url}}{% url "recover" token %}" class="button">Recuperar Contraseña</a></p>
             <p>Si tú no solicitaste esta recuperación, puedes ignorar este mensaje. Nadie más podrá cambiar tu contraseña sin tu autorización.</p>
         </div>
         <div class="footer">

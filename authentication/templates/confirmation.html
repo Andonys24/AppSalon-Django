@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% include "messages.html" %}
+
+    <div class="acciones">
+        <a href="{% url "login" %}">Regresar</a>
+    </div>
+    
+{% endblock content %}
