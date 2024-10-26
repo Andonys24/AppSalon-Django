@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+    {% include "messages.html" %}
     <form action="{% url "forget" %}" class="formulario" method="post">
         {% csrf_token %}
         <div class="campo">

@@ -156,3 +156,38 @@ class CustomUserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class PasswordRecoveryForm(forms.Form):
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={"placeholder": "Ingresa tu nueva contraseña"}
+        ),
+        label="Nueva Contraseña",
+    )
+
+    def clean_password(self):
+        password = self.cleaned_data.get("password")
+        if not password:
+            raise forms.ValidationError("La Contraseña es requerida")
+        if len(password) < 8:
+            raise forms.ValidationError(
+                "La Contraseña no puede tener menos de 8 caracteres"
+            )
+        if not re.search(r"[a-z]", password):
+            raise forms.ValidationError(
+                "La Contraseña debe contener al menos una letra minúscula"
+            )
+        if not re.search(r"[A-Z]", password):
+            raise forms.ValidationError(
+                "La Contraseña debe contener al menos una letra mayúscula"
+            )
+        if not re.search(r"[0-9]", password):
+            raise forms.ValidationError(
+                "La Contraseña debe contener al menos un número"
+            )
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            raise forms.ValidationError(
+                "La Contraseña debe contener al menos un carácter especial"
+            )
+        return password.strip()

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import CustomUser, Token
-from .forms import CustomUserForm
+from .forms import CustomUserForm, PasswordRecoveryForm
 from utils.task import send_confirmation_email, send_recovery_email
 
 
@@ -47,6 +47,21 @@ def custom_logout(request):
 
 
 def forget(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        try:
+            user = CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            messages.error(request, "Usuario no encontrado")
+        else:
+            if not user.is_active:
+                messages.error(request, "Cuenta no confirmada")
+            else:
+                token = Token.objects.create(user=user)
+                send_recovery_email(user, token.token)
+                messages.success(
+                    request, "Email de recuperación enviado", extra_tags="exito"
+                )
     return render(
         request,
         "forget.html",
@@ -58,7 +73,42 @@ def forget(request):
     )
 
 
-def recover(request):
+def recover(request, token):
+    alerts = []
+    show = False
+    if not token:
+        return redirect("login")
+    try:
+        token = Token.objects.get(token=token)
+    except Token.DoesNotExist:
+        messages.error(request, "Token no válido")
+    else:
+        if token.used:
+            messages.error(request, "Este token ya ha sido utilizado")
+        elif token.is_expired():
+            messages.error(request, "Token expirado")
+        else:
+            show = True
+            if request.method =='POST':
+                form = PasswordRecoveryForm(request.POST)
+                if form.is_valid():
+                    password = form.cleaned_data.get("password")
+                    user = get_object_or_404(CustomUser, id=token.user.id)
+                    user.set_password(password)
+                    if user:
+                        token.used = True
+                        user.save()
+                        token.save()
+                        messages.success(
+                            request, "Contraseña actualizada correctamente", extra_tags="exito"
+                        )
+                        return redirect("login")
+                    
+                else:
+                    alerts = []
+                    for field, errors in form.errors.items():
+                        alerts.extend(errors)
+
     return render(
         request,
         "recover.html",
@@ -66,6 +116,8 @@ def recover(request):
             "title": "Recuperar cuenta",
             "name_page": "Recuperar contraseña",
             "description_page": "Coloca tu nueva contraseña a continuación",
+            "show": show,
+            "alerts": alerts,
         },
     )
 
