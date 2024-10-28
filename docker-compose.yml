@@ -1,11 +1,53 @@
+networks:
+  app_salon_network:
+    name: app_salon_network
+    driver: bridge
+
 services:
+  db:
+    image: postgres:latest
+    container_name: postgres_app_salon
+    environment:
+        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/app_salon.sql:/docker-entrypoint-initdb.d/app_salon.sql
+    networks:
+      - app_salon_network
+
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: django_app_salon
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app/
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - app_salon_network
+
   gulpfile:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.node
     container_name: gulp-compiler
     command: npm run dev
     volumes:
-      - ./src:/usr/app/src
-      - ./static:/usr/app/static
-      - ./gulpfile.js:/usr/app/gulpfile.js
+      - ./src:/usr/src/app/src
+      - ./static:/usr/src/app/static
+      - ./gulpfile.js:/usr/src/app/gulpfile.js
+    depends_on:
+      - django
+    networks:
+      - app_salon_network
+
+volumes:
+  postgres_data:

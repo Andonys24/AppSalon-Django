@@ -16,7 +16,9 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.conf.urls import handler404
 from django.urls import path, include
+from utils.views import not_found
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -24,3 +26,5 @@ urlpatterns = [
     path("", include("dating_services.urls")),
     path("administracion/", include("administration.urls")),
 ]
+
+handler404 = not_found
