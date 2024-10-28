@@ -1,0 +1,14 @@
+<div class="barra">
+	<p>Bienvenido, <span>{{ request.user.username }}</span></p>
+	<a class="boton" href="{% url "logout" %}">Cerrar Sesión</a>
+</div>
+
+{% if request.user.is_superuser %}
+    <div class="barra-servicios">
+        <a href="/admin" class="boton">Ver citas</a>
+        <a href="/servicios" class="boton">Ver Servicios</a>
+        <a href="/servicios/crear" class="boton">Nuevo Servicio</a>
+    </div>
+{% endif %}
+
+{% include "messages.html" %}

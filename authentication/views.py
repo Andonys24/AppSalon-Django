@@ -8,6 +8,16 @@ from utils.task import send_confirmation_email, send_recovery_email
 
 # Create your views here.
 def custom_login(request):
+    # Validar si el usuario está autenticado
+    if request.user.is_authenticated:
+        is_superuser = request.session.get("is_superuser")
+        # validar si el usuario es superusuario
+        if is_superuser:
+            pass
+            # return redirect("administracion")
+        else:
+            return redirect("cita")
+
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -22,11 +32,13 @@ def custom_login(request):
             else:
                 user = authenticate(request, username=username, password=password)
                 if user is not None:
-                    # login(request, user)
-                    messages.success(
-                        request, "Inicio de sesión correcto", extra_tags="exito"
-                    )
-                    # return redirect("home")
+                    login(request, user)
+                    request.session["is_superuser"] = user.is_superuser
+                    if user.is_superuser:
+                        pass
+                        # return redirect("administracion")
+                    else:
+                        return redirect("cita")
                 else:
                     messages.error(request, "Credenciales incorrectas")
 
@@ -43,6 +55,7 @@ def custom_login(request):
 
 def custom_logout(request):
     logout(request)
+    messages.success(request, "Sesión cerrada correctamente", extra_tags="exito")
     return redirect("login")
 
 
@@ -76,6 +89,7 @@ def forget(request):
 def recover(request, token):
     alerts = []
     show = False
+
     if not token:
         return redirect("login")
     try:
@@ -87,27 +101,29 @@ def recover(request, token):
             messages.error(request, "Este token ya ha sido utilizado")
         elif token.is_expired():
             messages.error(request, "Token expirado")
+        elif not token.user.is_active:
+            messages.error(request, "Cuenta no confirmada")
         else:
             show = True
-            if request.method =='POST':
+            if request.method == "POST":
                 form = PasswordRecoveryForm(request.POST)
                 if form.is_valid():
                     password = form.cleaned_data.get("password")
                     user = get_object_or_404(CustomUser, id=token.user.id)
                     user.set_password(password)
-                    if user:
-                        token.used = True
-                        user.save()
-                        token.save()
-                        messages.success(
-                            request, "Contraseña actualizada correctamente", extra_tags="exito"
-                        )
-                        return redirect("login")
-                    
+                    token.used = True
+                    user.save()
+                    token.save()
+                    messages.success(
+                        request,
+                        "Contraseña actualizada correctamente",
+                        extra_tags="exito",
+                    )
+                    return redirect("login")
                 else:
-                    alerts = []
-                    for field, errors in form.errors.items():
-                        alerts.extend(errors)
+                    alerts = [
+                        error for errors in form.errors.values() for error in errors
+                    ]
 
     return render(
         request,
@@ -142,9 +158,7 @@ def register(request):
             else:
                 alerts.append("Error al crear la cuenta")
         else:
-            alerts = []
-            for field, errors in form.errors.items():
-                alerts.extend(errors)
+            alerts = [error for errors in form.errors.values() for error in errors]
     else:
         form = CustomUserForm()
     return render(

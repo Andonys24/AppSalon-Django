@@ -114,17 +114,17 @@ async function consultarAPI() {
 
 function mostrarServicios(servicios) {
 	servicios.forEach((servicio) => {
-		const { id, nombre, precio } = servicio;
+		const { id, name, price } = servicio;
 
 		// Mostrando los nombres dentro de la etiqueta p
 		const nombreServicio = document.createElement("P");
 		nombreServicio.classList.add("nombre-servicio");
-		nombreServicio.textContent = nombre;
+		nombreServicio.textContent = name;
 
 		// Mostrando los precios en una etiqueta p
 		const precioServicio = document.createElement("P");
 		precioServicio.classList.add("precio-servicio");
-		precioServicio.textContent = `L.${precio}`;
+		precioServicio.textContent = `L.${price}`;
 
 		// Creacion del div serivicio
 		const servicioDiv = document.createElement("div");
@@ -246,15 +246,15 @@ function mostrarResumen() {
 
 	// Iteramos y mostramos los servicios
 	servicios.forEach((servicio) => {
-		const { id, precio, nombre } = servicio;
+		const { id, price, name } = servicio;
 		const contenedorServicio = document.createElement("div");
 		contenedorServicio.classList.add("contenedor-servicio");
 
 		const textoServicio = document.createElement("p");
-		textoServicio.textContent = nombre;
+		textoServicio.textContent = name;
 
 		const precioServicio = document.createElement("P");
-		precioServicio.innerHTML = `<span>Precio:</span> L.${precio}`;
+		precioServicio.innerHTML = `<span>Precio:</span> L.${price}`;
 
 		contenedorServicio.appendChild(textoServicio);
 		contenedorServicio.appendChild(precioServicio);
@@ -302,12 +302,14 @@ async function reservarCita() {
 	const { id, nombre, fecha, hora, servicios } = cita;
 
 	const idServicios = servicios.map((servicio) => servicio.id);
+	const token = document.querySelector("#csrf").value;
 
 	const datos = new FormData();
 	datos.append("usuario_id", id);
 	datos.append("fecha", fecha);
 	datos.append("hora", hora);
 	datos.append("servicios", idServicios);
+	datos.append("csrfmiddlewaretoken", token);
 
 	try {
 		// Peticion hacia la api
@@ -326,7 +328,6 @@ async function reservarCita() {
 				icon: "success",
 				title: "Cita Creada",
 				text: "Tu cita fue Creada Correctamente!",
-				button: "OK",
 			}).then(() => {
 				setTimeout(() => {
 					window.location.reload();

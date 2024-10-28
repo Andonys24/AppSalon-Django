@@ -148,6 +148,9 @@ class CustomUserForm(forms.ModelForm):
             raise ValidationError(
                 "El Username solo puede contener letras, números y guiones bajos, sin espacios"
             )
+        username = username.lower()
+        if CustomUser.objects.filter(username=username).exists():
+            raise ValidationError("El Username ya está en uso")
         return username.strip()
 
     def save(self, commit=True):
