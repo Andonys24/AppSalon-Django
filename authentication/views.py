@@ -13,8 +13,7 @@ def custom_login(request):
         is_superuser = request.session.get("is_superuser")
         # validar si el usuario es superusuario
         if is_superuser:
-            pass
-            # return redirect("administracion")
+            return redirect("administration")
         else:
             return redirect("cita")
 
@@ -35,8 +34,7 @@ def custom_login(request):
                     login(request, user)
                     request.session["is_superuser"] = user.is_superuser
                     if user.is_superuser:
-                        pass
-                        # return redirect("administracion")
+                        return redirect("administration")
                     else:
                         return redirect("cita")
                 else:
@@ -149,7 +147,7 @@ def register(request):
                 if token:
                     send_confirmation_email(user, token.token)
                     messages.success(
-                        request, "Cuenta creada correctamente", extra_tags="exito"
+                        request, "Cuenta creada, revisa tu correo para confirmar tu cuenta", extra_tags="exito"
                     )
                     form = CustomUserForm()
                     return redirect("login")

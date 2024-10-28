@@ -5,9 +5,9 @@
 
 {% if request.user.is_superuser %}
     <div class="barra-servicios">
-        <a href="/admin" class="boton">Ver citas</a>
-        <a href="/servicios" class="boton">Ver Servicios</a>
-        <a href="/servicios/crear" class="boton">Nuevo Servicio</a>
+        <a href="{% url "administration" %}" class="boton">Ver citas</a>
+        <a href="{% url "services" %}" class="boton">Ver Servicios</a>
+        <a href="{% url "services_create" %}" class="boton">Nuevo Servicio</a>
     </div>
 {% endif %}
 

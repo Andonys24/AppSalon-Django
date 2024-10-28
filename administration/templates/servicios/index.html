@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% include "bar.html" %}
+
+{% if services|length == 0 %}
+<h2 class="no-citas">No hay servicios disponibles</h2>
+{% else %}
+<ul class="servicios">
+    {% for service in services %}
+        <li>
+            <p>Nombre: <span>{{service.name}}</span></p>
+            <p>Precio: <span>L. {{service.price}}</span></p>
+
+            <div class="acciones">
+                <a class="boton" href="{% url "services_update" service.id %}">Actualizar</a>
+
+                <form action="{% url "services_delete" %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{service.id}}">
+                    <input type="submit" value="Borrar" class="boton-eliminar">
+                </form>
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock content %}
+

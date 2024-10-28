@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "authentication",
     "utils",
     "dating_services",
+    "administration",
 ]
 
 AUTH_USER_MODEL = "authentication.CustomUser"

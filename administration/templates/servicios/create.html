@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "bar.html" %}
+    <form action="{% url "services_create" %}" method="post">
+        {% include "servicios/form.html" %}
+        <input type="submit" value="Guardar Servicio" class="boton">
+    </form>
+
+{% endblock content %}
+
